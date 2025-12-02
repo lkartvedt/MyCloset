@@ -19,18 +19,72 @@ func thumbnailLayout(for category: ClothingCategory, subcategory: ClothingSubcat
     switch category {
 
     case .tops:
-        return ClothingThumbnailLayout(
-            contentWidth: 130,
-            contentHeight: 230,
-            yOffset: 35
-        )
+        switch subcategory {
+            case .sweaters:
+                return ClothingThumbnailLayout(
+                    contentWidth: 130,
+                    contentHeight: 230,
+                    yOffset: 35
+                )
+            case .shirts:
+                return ClothingThumbnailLayout(
+                    contentWidth: 130,
+                    contentHeight: 230,
+                    yOffset: 35
+                )
+            case .crop_tops:
+                return ClothingThumbnailLayout(
+                    contentWidth: 130,
+                    contentHeight: 230,
+                    yOffset: 35
+                )
+            case .tank_tops:
+                return ClothingThumbnailLayout(
+                    contentWidth: 130,
+                    contentHeight: 230,
+                    yOffset: 35
+                )
+            default:
+                return ClothingThumbnailLayout(
+                    contentWidth: 80,
+                    contentHeight: 80,
+                    yOffset: 0
+                )
+        }
 
     case .jackets:
-        return ClothingThumbnailLayout(
-            contentWidth: 100,
-            contentHeight: 200,
-            yOffset: 30
-        )
+        switch subcategory {
+            case .coats:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: 30
+                )
+            case .hoodies:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: 30
+                )
+            case .blazers:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: 30
+                )
+            case .vests:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: 30
+                )
+            default:
+                return ClothingThumbnailLayout(
+                    contentWidth: 80,
+                    contentHeight: 80,
+                    yOffset: 0
+                )
+        }
 
     case .bottoms:
         switch subcategory {
@@ -89,11 +143,38 @@ func thumbnailLayout(for category: ClothingCategory, subcategory: ClothingSubcat
         }
 
     case .shoes:
-        return ClothingThumbnailLayout(
-            contentWidth: 200,
-            contentHeight: 200,
-            yOffset: -55
-        )
+        switch subcategory {
+            case .boots:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: -60
+                )
+            case .sneakers:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: -70
+                )
+            case .athletic:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: -70
+                )
+            case .open_toe:
+                return ClothingThumbnailLayout(
+                    contentWidth: 100,
+                    contentHeight: 200,
+                    yOffset: -70
+                )
+            default:
+                return ClothingThumbnailLayout(
+                    contentWidth: 80,
+                    contentHeight: 80,
+                    yOffset: 0
+                )
+        }
 
     case .accessories:
         // Most accessories are around head/upper body
@@ -172,7 +253,7 @@ struct ClothingThumbnailView_Previews: PreviewProvider {
 
         // Fake items for previewing each category easily
         let sampleItems: [ClothingItem] = [
-            ClothingItem(name: "Sweater", category: .tops, imageName: "green_sweater"),
+            ClothingItem(name: "Sweater", category: .tops, subcategory: .sweaters, imageName: "green_sweater"),
             ClothingItem(name: "Jeans", category: .bottoms, subcategory: .pants, imageName: "jeans"),
             ClothingItem(name: "Black Skirt", category: .bottoms, subcategory: .short_skirts, imageName: "black_skort"),
             ClothingItem(name: "Tights", category: .undergarments, subcategory: .tights,
@@ -181,9 +262,13 @@ struct ClothingThumbnailView_Previews: PreviewProvider {
             ClothingItem(name: "Socks", category: .undergarments, subcategory: .socks,
                          imageNameFlat: "black_sheer_flat", imageNameHeels: "black_sheer_heels",
                          supportedFootStyles: [.flat, .heels]),
-            ClothingItem(name: "Jacket", category: .jackets, imageName: "green_sweater"),
-            ClothingItem(name: "Boots", category: .shoes, imageName: "black_boots",
+            ClothingItem(name: "Jacket", category: .jackets, subcategory: .coats, imageName: "green_sweater"),
+            ClothingItem(name: "Boots", category: .shoes, subcategory: .boots, imageName: "black_boots",
                          supportedFootStyles: [.heels]),
+            ClothingItem(name: "UggBoots", category: .shoes, subcategory: .boots, imageName: "gray_uggs",
+                         supportedFootStyles: [.flat]),
+            ClothingItem(name: "Sneakers", category: .shoes, subcategory: .sneakers, imageName: "white_tennis_shoes",
+                         supportedFootStyles: [.flat]),
         ]
 
         ScrollView {

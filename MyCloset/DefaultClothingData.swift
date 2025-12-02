@@ -14,24 +14,28 @@ enum DefaultClothingData {
         let greenSweater = ClothingItem(
             name: "Green Sweater",
             category: .tops,
+            subcategory: .sweaters,
             imageName: "green_sweater",
             tags: ["turtle neck", "fall", "winter", "green", "polyester"]
         )
         let blackCrop = ClothingItem(
             name: "Black Crop Top",
             category: .tops,
+            subcategory: .crop_tops,
             imageName: "black_crop",
             tags: ["mock turtle neck", "black", "crop top"]
         )
         let grayTank = ClothingItem(
             name: "Gray Crop Tank",
             category: .tops,
+            subcategory: .crop_tops,
             imageName: "gray_tank",
             tags: ["velvet", "tank top", "crop top", "gray"]
         )
         let greenTank = ClothingItem(
             name: "Green Crop Tank",
             category: .tops,
+            subcategory: .crop_tops,
             imageName: "green_tank",
             tags: ["velvet", "tank top", "crop top", "green"]
         )
@@ -120,6 +124,7 @@ enum DefaultClothingData {
         let sneakers = ClothingItem(
             name: "White Sneakers",
             category: .shoes,
+            subcategory: .sneakers,
             imageName: "white_tennis_shoes",
             tags: ["casual"],
             supportedFootStyles: [.flat]
@@ -127,6 +132,7 @@ enum DefaultClothingData {
         let tallBlackBoots = ClothingItem(
             name: "Tall Black Boots",
             category: .shoes,
+            subcategory: .boots,
             imageName: "black_boots",
             tags: ["black", "leather", "winter", "fall", "knee high", "boots"],
             supportedFootStyles: [.heels]
@@ -134,6 +140,7 @@ enum DefaultClothingData {
         let grayUggs = ClothingItem(
             name: "Gray Uggs",
             category: .shoes,
+            subcategory: .boots,
             imageName: "gray_uggs",
             tags: ["gray", "boots", "winter", "fall"],
             supportedFootStyles: [.flat]

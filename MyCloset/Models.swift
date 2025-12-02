@@ -56,12 +56,18 @@ enum FootStyle: String, CaseIterable, Identifiable, Codable {
 enum ClothingSubcategory: String, CaseIterable, Identifiable, Codable {
     // Accessories
     case hats, jewelry, bags, belts, scarves, glasses, gloves
+    // Jackets
+    case coats, hoodies, blazers, vests
+    // Tops
+    case sweaters, shirts, crop_tops, tank_tops
     // Bottoms
     case pants, shorts, short_skirts, long_skirts
     //Undergarments
     case bras, underwear, socks, tights
     // Other
     case dresses, overalls, swimsuits, robes, pajamas, sports
+    // Shoes
+    case boots, sneakers, open_toe, athletic
 
     var id: String { rawValue }
 

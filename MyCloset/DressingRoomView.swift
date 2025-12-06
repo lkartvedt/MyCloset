@@ -173,7 +173,7 @@ struct DressingRoomView: View {
 
 
             // Layering section with drag-to-reorder
-            Section(header: Text("Layering (top to bottom)")) {
+            Section(header: Text("Layering (back to font)")) {
                 if workingOutfit.itemIDs.isEmpty {
                     Text("No items selected.")
                         .foregroundColor(.secondary)

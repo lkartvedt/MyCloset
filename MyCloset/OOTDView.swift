@@ -1,20 +1,30 @@
 import SwiftUI
 import SwiftData
 import CoreLocation
+import WeatherKit
+
 
 struct OOTDView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var outfits: [Outfit]
+    @Query private var trips: [Trip]
 
     @State private var selectedDate = Date()
     @State private var showingDatePicker = false
-    @State private var navigateToNewOutfit = false   // 👈 for navigation
+    @State private var navigateToNewOutfit = false
+    
+    // Weather info for the current date/location
+    struct WeatherInfo {
+        var locationName: String
+        var high: Int
+        var low: Int
+        var symbol: String   // TODO: real weather emoji
+    }
+    
+    @State private var weatherInfo: WeatherInfo?
+    @State private var isLoadingWeather = false
+    @State private var weatherError: String?
 
-    // Later: real location + weather integration
-    @State private var locationName: String = "Current Location"
-    @State private var highTemp: Int = 72
-    @State private var lowTemp: Int = 60
-    @State private var weatherEmoji: String = "☀️"
 
     private var dateFormatter: DateFormatter {
         let df = DateFormatter()
@@ -26,6 +36,18 @@ struct OOTDView: View {
         let df = DateFormatter()
         df.dateFormat = "MM/dd/yy"
         return df
+    }
+    
+    private var activeTrip: Trip? {
+        trips.first { $0.contains(selectedDate) }
+    }
+
+    private var displayLocationName: String {
+        if let trip = activeTrip {
+            return trip.locationName
+        } else {
+            return "Current Location"  // TODO: Use actual device location here
+        }
     }
 
     private var outfitsForDay: [Outfit] {
@@ -73,6 +95,16 @@ struct OOTDView: View {
                 .navigationTitle("Jump to Date")
             }
         }
+        .onAppear {
+            loadWeather()
+        }
+        .onChange(of: selectedDate) { _ in
+            loadWeather()
+        }
+        .onChange(of: trips.count) { _ in
+            // if trips change (e.g., you edit dates/location), refresh
+            loadWeather()
+        }
     }
 
     // MARK: - Header & weather stay the same...
@@ -106,21 +138,39 @@ struct OOTDView: View {
     private var weatherRow: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(locationName)
+                Text(displayLocationName)
                     .bold()
                 Spacer()
+                if activeTrip != nil {
+                    Text("From trip")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
                 Button("Change") {
-                    // Later: present location picker / search
+                    // TODO: manual override / location picker
                 }
                 .font(.caption)
             }
 
-            HStack {
-                Text("\(weatherEmoji) High \(highTemp)°  Low \(lowTemp)°")
+            if isLoadingWeather {
+                Text("Loading weather…")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else if let info = weatherInfo {
+                Text("\(info.symbol) High \(info.high)°  Low \(info.low)°")
+            } else if let error = weatherError {
+                Text("Weather unavailable: \(error)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            } else {
+                Text("Weather not loaded.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
         .font(.subheadline)
     }
+
 
     // MARK: - Avatar + outfits + Create button
 
@@ -208,4 +258,77 @@ struct OOTDView: View {
             selectedDate = newDate
         }
     }
+    
+    private func loadWeather() {
+        weatherError = nil
+        weatherInfo = nil
+
+        // If this date is inside a trip with coordinates, use those
+        guard let trip = activeTrip,
+              let lat = trip.latitude,
+              let lon = trip.longitude else {
+            // TODO: fall back to device location here
+            return
+        }
+
+        isLoadingWeather = true
+
+        Task {
+            do {
+                let service = WeatherService.shared
+                let location = CLLocation(latitude: lat, longitude: lon)
+
+                let weather = try await service.weather(for: location)
+
+                if let firstDay = weather.dailyForecast.forecast.first {
+                    let high = Int(firstDay.highTemperature.value.rounded())
+                    let low = Int(firstDay.lowTemperature.value.rounded())
+
+                    let symbolName = firstDay.symbolName
+                    let emoji = emojiForSymbol(symbolName)
+
+                    await MainActor.run {
+                        self.weatherInfo = WeatherInfo(
+                            locationName: trip.locationName,
+                            high: high,
+                            low: low,
+                            symbol: emoji
+                        )
+                        self.isLoadingWeather = false
+                    }
+                } else {
+                    await MainActor.run {
+                        self.weatherError = "No forecast data."
+                        self.isLoadingWeather = false
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.weatherError = "Error: \(error.localizedDescription)"
+                    self.isLoadingWeather = false
+                }
+            }
+        }
+    }
+
+
+    /// Very rough mapping from WeatherKit symbol name → emoji
+    private func emojiForSymbol(_ symbol: String) -> String {
+        if symbol.contains("sun") && !symbol.contains("cloud") {
+            return "☀️"
+        } else if symbol.contains("cloud.sun") {
+            return "⛅️"
+        } else if symbol.contains("cloud.rain") || symbol.contains("cloud.drizzle") {
+            return "🌧"
+        } else if symbol.contains("cloud.snow") {
+            return "❄️"
+        } else if symbol.contains("cloud.bolt") {
+            return "🌩️"
+        } else if symbol.contains("cloud") {
+            return "☁️"
+        } else {
+            return "🌡"
+        }
+    }
+
 }

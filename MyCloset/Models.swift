@@ -183,23 +183,42 @@ final class Outfit {
 
 @Model
 final class Trip {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var name: String
     var startDate: Date
     var endDate: Date
+
+    /// e.g. "Las Vegas, NV"
     var locationName: String
+
+    /// For WeatherKit / location-aware stuff
+    var latitude: Double?
+    var longitude: Double?
 
     init(
         id: UUID = UUID(),
         name: String,
         startDate: Date,
         endDate: Date,
-        locationName: String
+        locationName: String,
+        latitude: Double? = nil,
+        longitude: Double? = nil
     ) {
         self.id = id
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
         self.locationName = locationName
+        self.latitude = latitude
+        self.longitude = longitude
+    }
+
+    /// Convenience for “does this date fall inside the trip?”
+    func contains(_ date: Date) -> Bool {
+        let cal = Calendar.current
+        let d = cal.startOfDay(for: date)
+        return d >= cal.startOfDay(for: startDate) &&
+               d <= cal.startOfDay(for: endDate)
     }
 }
+
